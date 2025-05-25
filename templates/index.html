@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Excel Processor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            max-width: 700px;
+            margin: auto;
+            padding: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .drop-zone {
+            background-color: white;
+            border: 2px dashed #999;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            color: #777;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: background-color 0.3s;
+            position: relative;
+        }
+
+        .drop-zone.dragover {
+            background-color: #e8f0fe;
+            border-color: #4a90e2;
+        }
+
+        .drop-zone input[type="file"] {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            left: 0;
+            top: 0;
+            cursor: pointer;
+        }
+
+        .file-name {
+            margin-top: 10px;
+            font-weight: bold;
+            color: green;
+            display: block;
+        }
+
+            button {
+            background-color: #4CAF50;
+            border: none;
+            padding: 15px 0;        /* tăng chiều cao */
+            color: white;
+            border-radius: 12px;    /* bo góc giống drop-zone */
+            cursor: pointer;
+            font-size: 18px;        /* to hơn */
+            width: 100%;            /* rộng full container */
+            max-width: 100%;        /* đảm bảo không vượt */
+            display: block;
+            margin-top: 10px;
+        }
+
+        .message {
+            margin-top: 20px;
+            color: red;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Điền mã hàng File Excel</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <div class="drop-zone" id="drop-zone-data">
+            Kéo & thả file <strong>data.xlsx</strong> hoặc nhấn để chọn
+            <input type="file" name="data_file" id="data_file" accept=".xlsx,.xls" required>
+            <span class="file-name" id="file-name-data"></span>
+        </div>
+
+        <div class="drop-zone" id="drop-zone-maufile">
+            Kéo & thả file <strong>maufile.xlsx</strong> hoặc nhấn để chọn
+            <input type="file" name="maufile_file" id="maufile_file" accept=".xlsx,.xls" required>
+            <span class="file-name" id="file-name-maufile"></span>
+        </div>
+
+        <div style="text-align: center;">
+            <button type="submit">RUN</button>
+        </div>
+    </form>
+
+    {% if message %}
+    <div class="message">{{ message }}</div>
+    {% endif %}
+
+    <script>
+        function setupDropZone(dropZoneId, inputId, fileNameId) {
+            const dropZone = document.getElementById(dropZoneId);
+            const fileInput = document.getElementById(inputId);
+            const fileNameDisplay = document.getElementById(fileNameId);
+
+            dropZone.addEventListener("dragover", (e) => {
+                e.preventDefault();
+                dropZone.classList.add("dragover");
+            });
+
+            dropZone.addEventListener("dragleave", () => {
+                dropZone.classList.remove("dragover");
+            });
+
+            dropZone.addEventListener("drop", (e) => {
+                e.preventDefault();
+                dropZone.classList.remove("dragover");
+
+                const file = e.dataTransfer.files[0];
+                if (file) {
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    fileInput.files = dataTransfer.files;
+
+                    fileNameDisplay.textContent = `${file.name} đã được chọn`;
+                }
+            });
+
+            fileInput.addEventListener("change", () => {
+                const file = fileInput.files[0];
+                if (file) {
+                    fileNameDisplay.textContent = `${file.name} đã được chọn`;
+                }
+            });
+        }
+
+        setupDropZone("drop-zone-data", "data_file", "file-name-data");
+        setupDropZone("drop-zone-maufile", "maufile_file", "file-name-maufile");
+    </script>
+</body>
+</html>
