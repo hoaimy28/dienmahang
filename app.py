@@ -33,6 +33,13 @@ def index():
 
         try:
             data = pd.read_excel(data_path)
+
+            data.rename(columns={
+                'Barcode': 'Mã vạch',
+                'Product name': 'Tên hàng',
+                'Product number': 'Mã hàng'
+            }, inplace=True)
+
             maufile = pd.read_excel(maufile_path)
 
             data['Mã vạch'] = data['Mã vạch'].apply(
